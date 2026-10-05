@@ -1,16 +1,38 @@
 import express from "express";
 import bcrypt from "bcrypt";
+import fs from "fs";
 
 const router = express.Router();
 
 router.post('/auth/signup', (req, res) => {
-    // const res_input = Object.entries(req.body).map(([key, value]) => {
-    //     return `${key}: ${value}`;
-    // })
 
-    // res.send(res_input.join('\n'));
+    const path = "./database/users.json";
+    let lst_id = 0;
+    const saltRounds = 10
 
-    
+    fs.readFile(path, 'utf-8', (err, rawdata) => {
+        if(err) console.log("Error opening the file");
+
+        const users = JSON.parse(rawdata);
+        if(users.length > 0) lst_id = users[users.length-1].id;
+
+        bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+            if(err) console.error(err);
+
+            const newUser = {
+                'id': lst_id+1,
+                'username': req.body.username,
+                'password': hash
+            }
+
+            users.push(newUser);
+
+            fs.writeFile(path, JSON.stringify(users, null, 2), (err) => {
+                if(err) console.error(err);
+                res.send("Signup Successful");
+            });
+        })
+    })
 })
 
 export default router;
