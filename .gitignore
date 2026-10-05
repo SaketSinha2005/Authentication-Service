@@ -1,0 +1,6 @@
+#Ignored Files 
+#Environmental files
+.env
+
+#Node Modules
+node_modules
