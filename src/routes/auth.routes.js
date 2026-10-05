@@ -36,7 +36,7 @@ router.post('/auth/signup', (req, res) => {
     })
 })
 
-router.get('/auth/login', (req, res) => {
+router.post('/auth/login', (req, res) => {
     const path = "./database/users.json";
 
     fs.readFile(path, 'utf-8', (err, rawdata) => {
