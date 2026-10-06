@@ -1,12 +1,19 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import {user_register} from "../repo/auth.repo.js"
+import {already_registered, user_register} from "../repo/auth.repo.js"
 import fs from "fs";
 
 const router = express.Router();
 
 router.post('/auth/signup', async (req, res) => {
-    const saltRounds = 10
+    const saltRounds = 10;
+
+    const val = await already_registered(req.body.email);
+
+    if(await val.length > 0){
+        res.status(409).send("Email already Registered");
+        return;
+    }
 
     try {
         const hash = await bcrypt.hash(req.body.password, saltRounds);
