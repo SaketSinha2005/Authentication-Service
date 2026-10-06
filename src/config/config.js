@@ -3,10 +3,12 @@ dotenv.config();
 
 if(!process.env.PORT) throw new Error("Backend PORT number not defined in environmental variables");
 if(!process.env.JWT_SECRET) throw new Error("JWT_SECRET is not defined in environmental variables");
+if(!process.env.MONGO_URL) throw new Error("MONGO_URL is not defined in environmental variables");
 
 const config = {
     PORT: process.env.PORT,
-    JWT_SECRET: process.env.JWT_SECRET
+    JWT_SECRET: process.env.JWT_SECRET,
+    MONGO_URL: process.env.MONGO_URL
 }
 
 export default config;
