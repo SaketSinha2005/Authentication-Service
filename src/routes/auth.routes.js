@@ -5,19 +5,18 @@ import fs from "fs";
 
 const router = express.Router();
 
-router.post('/auth/signup', (req, res) => {
+router.post('/auth/signup', async (req, res) => {
     const saltRounds = 10
 
-    bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
-        if(err) console.error(err);
-        user_register(req.body.fname, req.body.lname, req.body.username, hash);
-
-        res.send("Signup Successfull");
-        return;
-    })
-
-    res.send("Registeration Unsuccessful");
-    return;
+    try {
+        const hash = await bcrypt.hash(req.body.password, saltRounds);
+        await user_register(req.body.fname, req.body.lname, req.body.username, hash);
+        res.status(201).send("Registeration Successfull");
+    }
+    catch (err){
+        console.error(err);
+        res.status(400).send("Registration Unsuccessful");
+    }
 })
 
 router.post('/auth/login', (req, res) => {
