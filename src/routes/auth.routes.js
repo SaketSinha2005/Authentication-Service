@@ -10,7 +10,7 @@ router.post('/auth/signup', async (req, res) => {
 
     try {
         const hash = await bcrypt.hash(req.body.password, saltRounds);
-        await user_register(req.body.fname, req.body.lname, req.body.username, hash);
+        await user_register(req.body.fname, req.body.lname, req.body.email, req.body.username, hash);
         res.status(201).send("Registeration Successfull");
     }
     catch (err){

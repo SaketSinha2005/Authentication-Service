@@ -1,9 +1,10 @@
 import Users from "../../database/schemaDB.js";
 
-async function user_register(fname, lname, username, pwd){
+async function user_register(fname, lname, email, username, pwd){
     const newUser = {
         FirstName: fname,
         LastName: lname,
+        Email: email,
         Username: username,
         Password: pwd
     }
