@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import config from "./src/config/config.js";
+import config from "./config/config.js";
 import authRouter from "./routes/auth.routes.js";
 
 const app = express();
