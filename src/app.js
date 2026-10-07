@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import config from "./config/config.js";
 import authRouter from "./routes/auth.routes.js";
+import userRouter from "./routes/user.routes.js"
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use('/api', authRouter);
+app.use('/api', userRouter);
 
 app.listen(config.PORT, () => {
     console.log(`Server is running at ${config.PORT}`);
