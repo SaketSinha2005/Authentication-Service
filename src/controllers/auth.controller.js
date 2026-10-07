@@ -42,13 +42,20 @@ async function Userlogin(req, res){
                 config.JWT_SECRET,
                 { expiresIn: '1d' }
             )
+
+            res.cookie('authCookie', token, {
+                httpOnly: true,
+                maxAge: 86400,
+                sameSite: "lax",
+                secure: false         //to make true in https production
+            });
+
             return res.status(200).json({
                 message: "Registration Successfull",
                 user: {
                     email: user.Email,
                     username: user.Username,
-                },
-                token
+                }
             })
         }
         else{
