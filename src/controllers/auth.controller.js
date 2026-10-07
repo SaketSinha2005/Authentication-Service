@@ -1,5 +1,7 @@
 import { already_registered, find_user_by_username, user_register } from "../repo/auth.repo.js";
+import config from "../config/config.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 async function UserSignup(req, res){
     const saltRounds = 10;
@@ -7,18 +9,18 @@ async function UserSignup(req, res){
     const val = await already_registered(req.body.email);
 
     if(val != null){
-        res.status(409).send("Email already Registered");
+        res.status(409).json({message: "Email already Registered"});
         return;
     }
 
     try {
         const hash = await bcrypt.hash(req.body.password, saltRounds);
         await user_register(req.body.fname, req.body.lname, req.body.email, req.body.username, hash);
-        res.status(201).send("Registeration Successfull");
+        res.status(201).json({message : "Registeration Successfull"});
     }
     catch (err){
         console.error(err);
-        res.status(400).send("Registration Unsuccessful");
+        res.status(400).json({ message: "Registration Unsuccessful" });
     }
 }
 
@@ -26,7 +28,7 @@ async function Userlogin(req, res){
     const user = await find_user_by_username(req.body.username);
 
     if(user === null){
-        res.status(401).send("Invalid Email or Password!");
+        res.status(401).json({ message: "Invalid Email or Password!" });
         return;
     }
 
@@ -35,17 +37,28 @@ async function Userlogin(req, res){
         const result = await bcrypt.compare(req.body.password, hashedpwd);
 
         if(result){
-            res.status(200).send("Login Successfull");
-            return;
+            const token = jwt.sign(
+                {userid: user._id, email: user.Email},
+                config.JWT_SECRET,
+                { expiresIn: '1d' }
+            )
+            return res.status(200).json({
+                message: "Registration Successfull",
+                user: {
+                    email: user.Email,
+                    username: user.Username,
+                },
+                token
+            })
         }
         else{
-            res.status(401).send("Invalid Email or Password!");
+            res.status(401).json({ message: "Invalid Email or Password!" });
             return;
         }
     }
     catch (err){
         console.error(err);
-        res.status(400).send("Login Unsuccessful");
+        res.status(400).json({ message: "Login Unsuccessful" });
     }
     
 }
