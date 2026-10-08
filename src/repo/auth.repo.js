@@ -1,4 +1,4 @@
-import Users from "../../database/schemaDB.js";
+import Users from "../models/user.model.js";
 
 async function already_registered(email){
     try {
