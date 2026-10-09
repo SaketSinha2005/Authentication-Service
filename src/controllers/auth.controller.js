@@ -1,4 +1,4 @@
-import { already_registered, find_user_by_username, user_register } from "../repo/auth.repo.js";
+import { already_registered, find_user_by_username, user_register, find_user_by_id } from "../repo/auth.repo.js";
 import config from "../config/config.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -37,15 +37,23 @@ async function Userlogin(req, res){
         const result = await bcrypt.compare(req.body.password, hashedpwd);
 
         if(result){
-            const token = jwt.sign(
+            const sessionExpiresAt = Date.now() + config.SESSION_DURATION;
+
+            const accessToken = jwt.sign(
                 {userid: user._id, email: user.Email},
-                config.JWT_SECRET,
-                { expiresIn: '1d' }
+                config.ACCESS_JWT_SECRET,
+                { expiresIn: '15m' }
             )
 
-            res.cookie('authCookie', token, {
+            const refreshToken = jwt.sign(
+                {userid: user._id, sessionExpiresAt},
+                config.REFRESH_JWT_SECRET,
+                {expiresIn: '7d'}
+            )
+
+            res.cookie('authCookie', refreshToken, {
                 httpOnly: true,
-                maxAge: 86400,
+                maxAge: 604800,
                 sameSite: "lax",
                 secure: false         //to make true in https production
             });
@@ -55,7 +63,8 @@ async function Userlogin(req, res){
                 user: {
                     email: user.Email,
                     username: user.Username,
-                }
+                },
+                accessToken
             })
         }
         else{
@@ -70,4 +79,32 @@ async function Userlogin(req, res){
     
 }
 
-export {UserSignup, Userlogin};
+async function RefreshToken(req, res){
+    
+    const user = await find_user_by_id(req.user.userid);
+
+    const accessToken = jwt.sign(
+        {userid: user._id, email: user.Email},
+        config.ACCESS_JWT_SECRET,
+        { expiresIn: '15m' }
+    )
+
+    const remainingTime = req.user.sessionExpiresAt - Date.now();
+
+    const refreshToken = jwt.sign(
+        {userid: user._id, sessionExpiredAt: req.user.sessionExpiredAt},
+        config.REFRESH_JWT_SECRET,
+        {expiresIn: Math.floor(remainingTime / 1000)}
+    )
+
+    res.cookie('authCookie', refreshToken, {
+        httpOnly: true,
+        maxAge: 604800,
+        sameSite: "lax",
+        secure: false         //to make true in https production
+    });
+
+    return res.status(201).json({accessToken});
+}
+
+export {UserSignup, Userlogin, RefreshToken};
