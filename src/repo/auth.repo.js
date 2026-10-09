@@ -41,4 +41,15 @@ async function find_user_by_username(username){
     }
 }
 
-export { already_registered, user_register, find_user_by_username };
+async function find_user_by_id(id){
+    try{
+        const user = await Users.findOne({_id: id});
+        return user;
+    }
+    catch (err){
+        console.error(err);
+        throw err;
+    }
+}
+
+export { already_registered, user_register, find_user_by_username , find_user_by_id};
