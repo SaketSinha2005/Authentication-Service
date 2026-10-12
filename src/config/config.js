@@ -12,7 +12,10 @@ const config = {
     ACCESS_JWT_SECRET: process.env.ACCESS_JWT_SECRET,
     REFRESH_JWT_SECRET: process.env.REFRESH_JWT_SECRET,
     SESSION_DURATION: process.env.SESSION_DURATION,
-    MONGO_URL: process.env.MONGO_URL
+    MONGO_URL: process.env.MONGO_URL,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:8000/api/auth/google/callback"
 }
 
 export default config;
