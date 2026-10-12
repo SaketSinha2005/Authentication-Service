@@ -18,6 +18,9 @@
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.11.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-oauth": "^1.0.0",
     "uuid": "^14.0.2"
   }
 }
