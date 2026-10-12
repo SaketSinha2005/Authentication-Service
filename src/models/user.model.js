@@ -8,7 +8,7 @@ const UsersSchema = new mongoose.Schema (
         },
         LastName: {
             type: String,
-            required: true
+            default: ""
         },
         Email: {
             type: String,
@@ -20,8 +20,13 @@ const UsersSchema = new mongoose.Schema (
         },
         Password: {
             type: String,
-            required: true
+            required: false
         },
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true
+        }
     },
 
     {timestamps: true}
