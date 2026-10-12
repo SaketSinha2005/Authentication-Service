@@ -1,8 +1,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import config from "./config/config.js";
+import passport from "./config/passport.config.js";
 import authRouter from "./routes/auth.routes.js";
-import userRouter from "./routes/user.routes.js"
+import userRouter from "./routes/user.routes.js";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -11,17 +12,17 @@ mongoose.connect(config.MONGO_URL).then((result) => {
     console.log('connected to Mongodb');
 }).catch((err) => {
     console.error(err);
-
 });
 
 app.disable('x-powered-by');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(passport.initialize());
 
 app.use('/api', authRouter);
 app.use('/api', userRouter);
 
 app.listen(config.PORT, () => {
     console.log(`Server is running at ${config.PORT}`);
-})
+});
