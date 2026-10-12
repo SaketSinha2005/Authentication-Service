@@ -107,4 +107,51 @@ async function RefreshToken(req, res){
     return res.status(201).json({accessToken});
 }
 
-export {UserSignup, Userlogin, RefreshToken};
+async function GoogleAuthCallback(req, res){
+    try {
+        const user = req.user;
+
+        if(!user){
+            return res.status(401).json({ message: "Google authentication failed" });
+        }
+
+        const sessionExpiresAt = Date.now() + Number(config.SESSION_DURATION);
+
+        const accessToken = jwt.sign(
+            { userid: user._id, email: user.Email },
+            config.ACCESS_JWT_SECRET,
+            { expiresIn: '15m' }
+        );
+
+        const refreshToken = jwt.sign(
+            { userid: user._id, sessionExpiresAt },
+            config.REFRESH_JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        res.cookie('authCookie', refreshToken, {
+            httpOnly: true,
+            maxAge: 604800000,
+            sameSite: "lax",
+            secure: false         // to make true in https production
+        });
+
+        return res.status(200).json({
+            message: "Google Authentication Successful",
+            user: {
+                id: user._id,
+                email: user.Email,
+                username: user.Username,
+                firstName: user.FirstName,
+                lastName: user.LastName
+            },
+            accessToken
+        });
+    }
+    catch (err){
+        console.error("Error in GoogleAuthCallback:", err);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export { UserSignup, Userlogin, RefreshToken, GoogleAuthCallback };
