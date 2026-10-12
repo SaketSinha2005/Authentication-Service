@@ -11,7 +11,7 @@ if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET) {
                 clientSecret: config.GOOGLE_CLIENT_SECRET,
                 callbackURL: config.GOOGLE_CALLBACK_URL,
             },
-            async (profile, done) => {
+            async (accessToken, refreshToken, profile, done) => {
                 try {
                     const user = await find_or_create_google_user(profile);
                     return done(null, user);
